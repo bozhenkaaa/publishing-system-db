@@ -1,0 +1,87 @@
+-- Створення бази даних
+CREATE DATABASE publishing_system;
+USE publishing_system;
+
+-- Таблиця редакторів
+CREATE TABLE Editor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    role VARCHAR(100),
+    manager_id INT
+);
+
+-- Таблиця авторів
+CREATE TABLE Author (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100)
+);
+
+-- Таблиця книг
+CREATE TABLE Book (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    publication_date DATE,
+    end_of_print_run DATE,
+    editor_id INT,
+    author_id INT
+);
+
+-- Таблиця платформ
+CREATE TABLE Platform (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+-- Зв’язок книга-платформа (M:N)
+CREATE TABLE Book_Platform (
+    book_id INT,
+    platform_id INT,
+    budget DECIMAL(12,2),
+    PRIMARY KEY (book_id, platform_id)
+);
+
+-- Таблиця розділів
+CREATE TABLE Chapter (
+    id INT AUTO_INCREMENT,
+    book_id INT,
+    title VARCHAR(255) NOT NULL,
+    genre VARCHAR(100),
+    target_audience VARCHAR(100),
+    language VARCHAR(50),
+    PRIMARY KEY (id, book_id)
+);
+
+-- Таблиця медіаматеріалів
+CREATE TABLE MediaMaterial (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    creation_date DATE,
+    path VARCHAR(255)
+);
+
+-- Таблиця аудіокниг
+CREATE TABLE AudioBook (
+    id INT PRIMARY KEY,
+    duration VARCHAR(50)
+);
+
+-- Таблиця ілюстрацій
+CREATE TABLE Illustration (
+    id INT PRIMARY KEY,
+    resolution VARCHAR(50)
+);
+
+-- Таблиця анотацій
+CREATE TABLE Annotation (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    text TEXT
+);
+
+-- Зв’язок розділ-медіа-анотація
+CREATE TABLE Chapter_MediaMaterial_Annotation (
+    chapter_id INT,
+    media_material_id INT,
+    annotation_id INT,
+    PRIMARY KEY (chapter_id, media_material_id, annotation_id)
+);

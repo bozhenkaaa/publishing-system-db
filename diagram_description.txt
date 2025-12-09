@@ -1,0 +1,47 @@
+Сутності:
+- Author (Автор): id, name, email
+- Book (Книга): id, title, publication_date, end_of_print_run
+- Editor (Редактор): id, name, position
+- Chapter (Розділ): id, title, genre, target_audience, language
+- Platform (Платформа): id, name
+- MediaMaterial (Медіа-матеріал): id, name, file_path, creation_date
+  - AudioBook (duration) — підтип MediaMaterial
+  - Illustration (resolution) — підтип MediaMaterial
+- Annotation (Анотація): text
+
+Опис зв'язків :
+
+1) Author — Writes — Book  
+   - Опис: Автор пише книги.  
+   - Author 1 — Writes — M Book.  
+     Тобто: один автор може написати багато книг; кожна книга має одного автора.
+
+2) Book — Manages/ManagedBy — Editor  
+   - Опис: за книгу відповідає конкретний редактор (редактор "веде" книгу).  
+   - Book 1 — ManagedBy — 1 Editor (1:1).  
+     Тобто: кожна книга має одного відповідального редактора; відповідний редактор керує однією (цією) книгою.
+
+3) Editor — Mentor — Editor (рекурсивний зв'язок)  
+   - Опис: деякі редактори — ментори для інших редакторів.  
+   - Mentor 1 — MentorOf — M Mentees (1:M).  
+     Тобто: один ментор може мати багато менті; кожен менті має одного (або нуль/одного, залежно від політики) ментора.
+
+4) Book — Posted on — Platform  
+   - Опис: Книга розміщується/публікується на платформах (Amazon, Google Books, тощо).  
+   - Book M — PostedOn — M Platform(M:N).  
+   - Додатково: зв'язок Posted on має атрибут budget — значення специфічне для пари (Book, Platform).
+
+5) Book — Contains — Chapter  
+   - Опис: Книга містить розділи.  
+   - Book 1 — Contains — M Chapter.  
+     Тобто: кожна книга складається з багатьох розділів; кожен розділ належить одній книзі.
+
+6) Forms (тернарний зв'язок) — Chapter + MediaMaterial + Annotation  
+   - Опис: Forms зв'язує трьома зв'язками: з Chapter, з Media Material та з Annotation. Це тернарна сутність/зв'язок, яка відображає, що готовий публікаційний елемент формується поєднанням розділу, конкретного медіа і конкретної анотації/тексту.  
+   - Chapter M — Forms — M MediaMaterial і MediaMaterial M — Forms — M Annotation і Chapter M — Forms — M Annotation — фактично кожна участь має множинну кардинальність, отже тернарний M:M:M.  
+     - Один розділ може брати участь у багатьох комбінаціях (формуваннях) з різними медіа і різними анотаціями.  
+     - Один медіа-матеріал може бути використаний у багатьох таких комбінаціях (у різних розділах/з різними анотаціями).  
+     - Одна анотація може використовуватись у багатьох комбінаціях (з різними розділами/медіа).
+
+7) MediaMaterial — ISA — {AudioBook, Illustration}  
+   - Опис: узагальнення/спадкування. MediaMaterial спеціалізується на двох підтипах: AudioBook (має duration) і Illustration (має resolution).

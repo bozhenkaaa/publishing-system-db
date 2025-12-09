@@ -1,0 +1,72 @@
+Сутності
+
+Editor — редактори видавництва.
+- id, name, role.
+
+Editor_Management — управлінська ієрархія редакторів.
+- Складений ключ (manager_id, subordinate_id).
+- Обидва поля — зовнішні ключі на Editor(id) з каскадним видаленням.
+
+Author — автори книжок.
+- id, name, email.
+
+Book — книжки, що видаються.
+- id, title, publication_date, end_of_print_run, editor_id (FK → Editor, ON DELETE SET NULL).
+
+Author_Book — зв’язок M:N між авторами та книжками.
+- PK (author_id, book_id), обидва поля — FK з каскадним видаленням.
+
+Platform — платформи, на яких розповсюджуються книжки (вебсайти, сервіси).
+- id, name.
+
+Book_Platform — M:N між книжками та платформами.
+- PK (book_id, platform_id), додатково budget.
+
+Chapter — розділи книжок.
+- id, book_id (FK → Book, каскадне видалення), title, genre, target_audience, language.
+
+MediaMaterial — мультимедійні матеріали (зображення, аудіо, тощо).
+- id, name, creation_date, path.
+
+AudioBook (ISA-підтип MediaMaterial).
+- id (PK/FK → MediaMaterial), duration.
+
+Illustration (ISA-підтип MediaMaterial).
+- id (PK/FK → MediaMaterial), resolution.
+
+Annotation — текстові коментарі або описи.
+- id, text.
+
+Chapter_MediaMaterial — M:N між розділами і медіаматеріалами.
+- PK (chapter_id, media_material_id).
+
+MediaMaterial_Annotation — M:N між медіаматеріалами і анотаціями.
+- PK (media_material_id, annotation_id).
+
+
+Зв’язки
+
+- Editor ↔ Editor (M:N) → Editor_Management (ієрархія підлеглостей).
+- Author ↔ Book (M:N) → Author_Book.
+- Book ↔ Platform (M:N) → Book_Platform (з додатковим полем budget).
+- Book ↔ Chapter (1:N).
+- Chapter ↔ MediaMaterial (M:N) → Chapter_MediaMaterial.
+- MediaMaterial ↔ Annotation (M:N) → MediaMaterial_Annotation.
+- MediaMaterial має підтипи: AudioBook, Illustration (через спадкування ISA).
+
+
+Обмеження та правила
+
+- PK/UNIQUE:
+  - Складені ключі у зв’язкових таблицях (наприклад, (book_id, platform_id)).
+
+- FK з поведінкою:
+  - ON DELETE CASCADE для зв’язкових таблиць.
+  - ON DELETE SET NULL для Book.editor_id.
+
+- CHECK та тригери:
+  - Тригер trg_check_book_dates через функцію check_book_dates() перевіряє, 
+    що end_of_print_run не встановлено без publication_date.
+
+- Індекси:
+  - Автоматичні по первинних ключах.
